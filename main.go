@@ -25,17 +25,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if fi.Mode() & os.ModeNamedPipe == 0 {
+	if fi.Mode()&os.ModeNamedPipe == 0 {
 		log.Fatal(`Target file is not a named pipe.`)
 	}
 
 	type payload struct {
 		Header *tar.Header
-		Data *bytes.Buffer
+		Data   *bytes.Buffer
 	}
 
 	// start stdin reader
-	// STDIN is a tar stream, meaning that a payload is not ready for 
+	// STDIN is a tar stream, meaning that a payload is not ready for
 	// writing until the whole record has been retrieved.
 	stin := make(chan payload)
 	go func() {
@@ -56,7 +56,7 @@ func main() {
 			}
 			stin <- payload{
 				Header: h,
-				Data: &b,
+				Data:   &b,
 			}
 		}
 	}()
@@ -85,7 +85,7 @@ func main() {
 			}
 			ptin <- payload{
 				Header: h,
-				Data: &b,
+				Data:   &b,
 			}
 		}
 	}()
@@ -99,16 +99,16 @@ func main() {
 			break
 		}
 		select {
-			case p, ok = <- stin:
-				if !ok {
-					stin = nil
-					continue
-				}
-			case p, ok = <- ptin:
-				if !ok {
-					ptin = nil
-					continue
-				}
+		case p, ok = <-stin:
+			if !ok {
+				stin = nil
+				continue
+			}
+		case p, ok = <-ptin:
+			if !ok {
+				ptin = nil
+				continue
+			}
 		}
 
 		if err := tw.WriteHeader(p.Header); err != nil {
@@ -124,4 +124,3 @@ func main() {
 		log.Fatalln(err)
 	}
 }
-
