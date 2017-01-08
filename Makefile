@@ -9,7 +9,7 @@ build:
 	  -e GOOS=linux \
 	  -e GOARCH=amd64 \
 	  golang:1.7 \
-	  go build -o bin/tar-stream-merge-linux64
+	  go build -ldflags="-s -w" -o bin/tar-stream-merge-linux64
 	@docker run --rm \
 	  -v $(PWD):/go/src/github.com/allingeek/tar-stream-merge \
 	  -v $(PWD)/bin:/go/bin \
@@ -17,4 +17,4 @@ build:
 	  -e GOOS=darwin \
 	  -e GOARCH=amd64 \
 	  golang:1.7 \
-	  go build -o bin/tar-stream-merge-darwin64
+	  go build -ldflags="-s -w" -o bin/tar-stream-merge-darwin64
